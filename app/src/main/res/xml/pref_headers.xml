@@ -3,17 +3,17 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="com.stefano.gart20.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="com.stefano.gart20.NewSettingsActivity$GeneralPreferenceFragment"
         android:icon="@drawable/ic_info_black_24dp"
         android:title="@string/pref_header_general" />
 
     <header
-        android:fragment="com.stefano.gart20.SettingsActivity$NotificationPreferenceFragment"
+        android:fragment="com.stefano.gart20.NewSettingsActivity$NotificationPreferenceFragment"
         android:icon="@drawable/ic_notifications_black_24dp"
         android:title="@string/pref_header_notifications" />
 
     <header
-        android:fragment="com.stefano.gart20.SettingsActivity$DataSyncPreferenceFragment"
+        android:fragment="com.stefano.gart20.NewSettingsActivity$DataSyncPreferenceFragment"
         android:icon="@drawable/ic_sync_black_24dp"
         android:title="@string/pref_header_data_sync" />
 

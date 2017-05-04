@@ -17,7 +17,6 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -238,23 +237,23 @@ public class MainActivity extends AppCompatActivity
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT));
 
-        btnExtSd.setOnClickListener(new View.OnClickListener() {
+        /*btnExtSd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 OpenExtSdCardPhoto(v);
             }
-        });
+        });*/
 
-        btnSd.setOnClickListener(new View.OnClickListener() {
+        /*btnSd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 OpenSdCardPhoto(v);
             }
-        });
+        });*/
 
-        String sec_storage = System.getenv("SECONDARY_STORAGE");
+        /*String sec_storage = System.getenv("SECONDARY_STORAGE");
 
-        /*if(sec_storage == null){
+        if(sec_storage == null){
             //non è presente sd card esterna
             linearLayout.addView(btnSd);
             targetPath = System.getenv("EXTERNAL_STORAGE") + "/DCIM/Camera";
@@ -337,7 +336,14 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_camera) {
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
-
+            item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    OpenSdCardPhoto(item);
+                    return true;
+                }
+            });
+            return true;
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
@@ -366,12 +372,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     /** Called when the user clicks the imageButtonExt */
-    public void OpenExtSdCardPhoto(View view) {
+    public void OpenExtSdCardPhoto(MenuItem item) {
         Intent intent = new Intent(this, ExtSdCardActivity.class);
         startActivity(intent);
     }
 
-    public void OpenSdCardPhoto(View view){
+    public void OpenSdCardPhoto(MenuItem item){
         Intent intent = new Intent(this, SdCardActivity.class);
         startActivity(intent);
     }

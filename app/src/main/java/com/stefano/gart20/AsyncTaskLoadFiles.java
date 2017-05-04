@@ -34,6 +34,11 @@ public class AsyncTaskLoadFiles extends AsyncTask<Void, String, Void> {
 
         files = targetDirector.listFiles();
 
+        if(files == null) {
+            Toast.makeText(mContext, "Permission denied", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if(files.length == 0){
             this.cancel(true);
             Toast.makeText(mContext, "Cartella vuota", Toast.LENGTH_SHORT).show();

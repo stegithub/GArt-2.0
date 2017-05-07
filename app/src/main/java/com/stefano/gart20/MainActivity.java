@@ -17,6 +17,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -175,7 +176,10 @@ public class MainActivity extends AppCompatActivity
                     filenameGLOBAL = (targetPath + "/" + dirName + "/" + System.currentTimeMillis() + ".jpg");
                     File f = new File(filenameGLOBAL);
                     Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    mMakePhotoUri = Uri.fromFile(f);
+                    //mMakePhotoUri = Uri.fromFile(f);
+
+                    mMakePhotoUri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".fileprovider", f);
+
                     i.putExtra(MediaStore.EXTRA_OUTPUT, mMakePhotoUri);
                     startActivityForResult(i, 1888);
                 }
@@ -188,8 +192,9 @@ public class MainActivity extends AppCompatActivity
 
                     File f =getOutputMediaFile(1);
 
+                    //mMakePhotoUri = Uri.fromFile(f);
+                    mMakePhotoUri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".fileprovider", f);
 
-                    mMakePhotoUri = Uri.fromFile(f);
                     i.putExtra(MediaStore.EXTRA_OUTPUT, mMakePhotoUri);
                     startActivityForResult(i, 1888);
                     //   startActivityForResult(cameraIntent, 1888);
@@ -207,8 +212,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
-
-        ViewGroup linearLayout = (ViewGroup) findViewById(R.id.drawer_layout);
+        //ViewGroup linearLayout = (ViewGroup) findViewById(R.id.drawer_layout);
 
     /*    Button btnGridView = new Button(this);
         btnGridView.setText("Gallery");
@@ -225,7 +229,7 @@ public class MainActivity extends AppCompatActivity
         linearLayout.addView(btnGridView);*/
 
 
-        Button btnExtSd = new Button(this);
+        /*Button btnExtSd = new Button(this);
         btnExtSd.setText("ExtSdCard Photo");
         btnExtSd.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -235,7 +239,7 @@ public class MainActivity extends AppCompatActivity
         btnSd.setText("SdCard Photo");
         btnSd.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT));
+                LinearLayout.LayoutParams.WRAP_CONTENT));*/
 
         /*btnExtSd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -251,11 +255,10 @@ public class MainActivity extends AppCompatActivity
             }
         });*/
 
-        /*String sec_storage = System.getenv("SECONDARY_STORAGE");
+        String sec_storage = System.getenv("SECONDARY_STORAGE");
 
         if(sec_storage == null){
             //non è presente sd card esterna
-            linearLayout.addView(btnSd);
             targetPath = System.getenv("EXTERNAL_STORAGE") + "/DCIM/Camera";
             STATE = 0;
         }
@@ -266,13 +269,7 @@ public class MainActivity extends AppCompatActivity
             String ext_storage = System.getenv("EXTERNAL_STORAGE");
             String targetPath = ext_storage + "/DCIM/Camera";
             File targetDirector = new File(targetPath);
-            final File[] files = targetDirector.listFiles();
-            if(files.length > 0){
-                linearLayout.addView(btnSd);
-            }
-            linearLayout.addView(btnExtSd);
-
-        }*/
+        }
 
     }
 
@@ -344,8 +341,21 @@ public class MainActivity extends AppCompatActivity
                 }
             });
             return true;
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_gallery_ext) {
+            String sec_storage = System.getenv("SECONDARY_STORAGE");
+            if(sec_storage == null){
+                Toast.makeText(getApplicationContext(), "Ext SD card not present", Toast.LENGTH_SHORT).show();
+            } else  {
+                item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        OpenExtSdCardPhoto(item);
+                        return true;
+                    }
+                });
+            }
 
+            return true;
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
@@ -378,6 +388,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void OpenSdCardPhoto(MenuItem item){
+        /*String sec_storage = System.getenv("SECONDARY_STORAGE");
+        Class sdCardClass;
+        if(sec_storage == null){
+            sdCardClass = SdCardActivity.class;
+        } else  {
+            targetPath = System.getenv("SECONDARY_STORAGE") + "/DCIM/Camera";
+            STATE = 1;
+            sdCardClass = ExtSdCardActivity.class;
+        }*/
+
         Intent intent = new Intent(this, SdCardActivity.class);
         startActivity(intent);
     }

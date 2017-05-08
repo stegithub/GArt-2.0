@@ -266,9 +266,15 @@ public class MainActivity extends AppCompatActivity
             targetPath = System.getenv("SECONDARY_STORAGE") + "/DCIM/Camera";
             STATE = 1;
             //Controllo se nella sd interna ci sono file
-            String ext_storage = System.getenv("EXTERNAL_STORAGE");
+            /*String ext_storage = System.getenv("EXTERNAL_STORAGE");
             String targetPath = ext_storage + "/DCIM/Camera";
             File targetDirector = new File(targetPath);
+            final File[] files = targetDirector.listFiles();
+            if(files.length > 0){
+                linearLayout.addView(btnSd);
+            }
+            linearLayout.addView(btnExtSd);*/
+
         }
 
     }
@@ -357,7 +363,9 @@ public class MainActivity extends AppCompatActivity
 
             return true;
         } else if (id == R.id.nav_manage) {
-
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+            return true;
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
@@ -426,21 +434,33 @@ public class MainActivity extends AppCompatActivity
         return uriSting;
     }
 
-    private String getRealPathFromURI(String contentURI) {
-        Uri contentUri = Uri.parse(contentURI);
-        Cursor cursor = getContentResolver().query(contentUri, null, null, null, null);
+    private String getRealPathFromURI(Uri contentURI) {
+        //Uri contentUri = Uri.parse(contentURI);
+        /*Cursor cursor = getContentResolver().query(contentUri, null, null, null, null);
         if (cursor == null) {
             return contentUri.getPath();
         } else {
             cursor.moveToFirst();
             int index = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
             return cursor.getString(index);
+        }*/
+
+        String result;
+        Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor == null) { // Source is Dropbox or other similar local file path
+            result = contentURI.getPath();
+        } else {
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(idx);
+            cursor.close();
         }
+        return result;
     }
 
-    public String compressImage(String imageUri) {
+    public String compressImage(String filePath) {
 
-        String filePath = getRealPathFromURI(imageUri);
+        //String filePath = getRealPathFromURI(imageUri);
         Bitmap scaledBitmap = null;
 
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -591,7 +611,7 @@ public class MainActivity extends AppCompatActivity
             //Bitmap photo = (Bitmap) data.getExtras().get("data");
             Uri uriImage = mMakePhotoUri;
 
-            System.loadLibrary("opencv_java");
+            //System.loadLibrary("opencv_java");
 
             /*String ext_storage = System.getenv("SECONDARY_STORAGE");
             String targetPath = ext_storage + "/DCIM/Camera";*/
@@ -605,7 +625,7 @@ public class MainActivity extends AppCompatActivity
             });
 
             //String last = getImgPath(uriImage);
-            String last = getRealPathFromURI(uriImage.toString());
+            String last = "/sdcard" + uriImage.getPath(); //getRealPathFromURI(uriImage);//.toString());
             String preLast = null;
 
             if(!files[1].isDirectory()){
@@ -623,10 +643,9 @@ public class MainActivity extends AppCompatActivity
 
             if(res < 0.9) {
 
-                String uriString = uriImage.toString();
-                String compressFile = compressImage(uriString);
-
-                File file = new File(compressFile);
+                //String compressFile = compressImage(last);//uriString);
+                //we can check if "compress image" preference is enabled or not
+                File file = new File(last);//compressFile);
                 Uri uri = Uri.fromFile(file);
 
 

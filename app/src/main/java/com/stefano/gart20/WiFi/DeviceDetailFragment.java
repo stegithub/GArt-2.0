@@ -20,6 +20,7 @@ import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
@@ -29,6 +30,8 @@ import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -230,6 +233,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
         Uri uri = data.getData();
         TextView statusText = (TextView) mContentView.findViewById(R.id.status_text);
         statusText.setText("Sending: " + uri);
+
         Log.d(SearchPeersActivity.TAG, "Intent----------- " + uri);
         Intent serviceIntent = new Intent(getActivity(), FileTransferService.class);
 
@@ -351,6 +355,19 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
                     .execute();
 
 
+            //Context context = getActivity();
+            //SharedPreferences sharedPref = context.getSharedPreferences("P2Pinfo", Context.MODE_PRIVATE);
+            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            String clientIP = null;
+            for(int i = 0; i < clientListIP.size(); i++) {
+                clientIP.concat(clientListIP.get(i));
+                if(i != clientListIP.size()-1) {
+                    clientIP.concat(",");
+                }
+            }
+            editor.putString("P2Pinfo", clientIP);
+            editor.commit();
 
             // mContentView.findViewById(R.id.btn_send_ip).setEnabled(false);
 
@@ -411,7 +428,7 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
      * A simple server socket that accepts connection and writes some data on
      * the stream.
      */
-    public static class FileServerAsyncTask extends AsyncTask<Void, Void, String> {
+    public class FileServerAsyncTask extends AsyncTask<Void, Void, String> {
 
         private Context context;
         private TextView statusText;
@@ -500,6 +517,21 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
             else {
                 statusText.setText("IP address received");
+
+                Context context = getActivity();
+                SharedPreferences sharedPref = context.getSharedPreferences("P2Pinfo", Context.MODE_PRIVATE);
+                //SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                String clientIP = "";
+                for(int i = 0; i < clientListIP.size(); i++) {
+                    String ipTemp = clientListIP.get(i);
+                    clientIP += ipTemp;
+                    if(i != clientListIP.size()-1) {
+                        clientIP.concat(",");
+                    }
+                }
+                editor.putString("P2Pinfo", clientIP);
+                editor.commit();
             }
         }
 

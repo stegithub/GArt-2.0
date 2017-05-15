@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity
     public static int STATE; //0 Sd secondaria non presente, 1 se presente
 
     String targetPath = null;
-
+    protected static final int CHOOSE_FILE_RESULT_CODE = 20;
 
     private Uri mMakePhotoUri;
 
@@ -336,9 +336,9 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        //if (id == R.id.nav_camera) { //commented element in activity_main_drawer.xml
+        // Handle the camera action
+        /*} else*/ if (id == R.id.nav_gallery) {
             item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
@@ -367,7 +367,9 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
             return true;
         } else if (id == R.id.nav_share) {
-
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("image/*");
+            startActivityForResult(intent, CHOOSE_FILE_RESULT_CODE);
         } else if (id == R.id.nav_send) {
 
         }
@@ -665,6 +667,11 @@ public class MainActivity extends AppCompatActivity
             {
                 Toast.makeText(getApplicationContext(), "Foto simile" , Toast.LENGTH_SHORT).show();
             }
+        } else if(requestCode == 20) {
+            String ipShared = "";
+            SharedPreferences shared = getSharedPreferences("P2Pinfo", Context.MODE_PRIVATE);
+            ipShared = shared.getString("P2Pinfo","IP not found");
+            Toast.makeText(getApplicationContext(), "ipShared: " + ipShared , Toast.LENGTH_LONG).show();
         }
     }
 

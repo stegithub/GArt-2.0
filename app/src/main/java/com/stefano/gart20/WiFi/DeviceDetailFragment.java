@@ -354,21 +354,6 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
             new FileServerAsyncTask(getActivity(), mContentView.findViewById(R.id.status_text), 8988)
                     .execute();
 
-
-            //Context context = getActivity();
-            //SharedPreferences sharedPref = context.getSharedPreferences("P2Pinfo", Context.MODE_PRIVATE);
-            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            String clientIP = null;
-            for(int i = 0; i < clientListIP.size(); i++) {
-                clientIP.concat(clientListIP.get(i));
-                if(i != clientListIP.size()-1) {
-                    clientIP.concat(",");
-                }
-            }
-            editor.putString("P2Pinfo", clientIP);
-            editor.commit();
-
             // mContentView.findViewById(R.id.btn_send_ip).setEnabled(false);
 
             /*byte[] myIPAddressByte = getLocalIPAddress();
@@ -517,21 +502,6 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
 
             else {
                 statusText.setText("IP address received");
-
-                Context context = getActivity();
-                SharedPreferences sharedPref = context.getSharedPreferences("P2Pinfo", Context.MODE_PRIVATE);
-                //SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                String clientIP = "";
-                for(int i = 0; i < clientListIP.size(); i++) {
-                    String ipTemp = clientListIP.get(i);
-                    clientIP += ipTemp;
-                    if(i != clientListIP.size()-1) {
-                        clientIP.concat(",");
-                    }
-                }
-                editor.putString("P2Pinfo", clientIP);
-                editor.commit();
             }
         }
 

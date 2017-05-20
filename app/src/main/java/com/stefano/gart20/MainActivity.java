@@ -211,56 +211,13 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
-        //ViewGroup linearLayout = (ViewGroup) findViewById(R.id.drawer_layout);
-
-    /*    Button btnGridView = new Button(this);
-        btnGridView.setText("Gallery");
-        btnGridView.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT));
-        btnGridView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, GridView2Activity/*PicassoGalleryActivity*///.class);
-    /*            startActivity(intent);
-            }
-        });
-        linearLayout.addView(btnGridView);*/
-
-
-        /*Button btnExtSd = new Button(this);
-        btnExtSd.setText("ExtSdCard Photo");
-        btnExtSd.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT));
-
-        Button btnSd = new Button(this);
-        btnSd.setText("SdCard Photo");
-        btnSd.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT));*/
-
-        /*btnExtSd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                OpenExtSdCardPhoto(v);
-            }
-        });*/
-
-        /*btnSd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                OpenSdCardPhoto(v);
-            }
-        });*/
-
         String sec_storage = System.getenv("SECONDARY_STORAGE");
 
         if(sec_storage == null){
             //non è presente sd card esterna
             targetPath = System.getenv("EXTERNAL_STORAGE") + "/DCIM/Camera";
             STATE = 0;
+
         }
         else  {
             targetPath = System.getenv("SECONDARY_STORAGE") + "/DCIM/Camera";
@@ -367,11 +324,13 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
             return true;
         } else if (id == R.id.nav_share) {
+            Intent intent = new Intent(this, SearchPeersActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (id == R.id.nav_send) {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
             startActivityForResult(intent, CHOOSE_FILE_RESULT_CODE);
-        } else if (id == R.id.nav_send) {
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -668,10 +627,22 @@ public class MainActivity extends AppCompatActivity
                 Toast.makeText(getApplicationContext(), "Foto simile" , Toast.LENGTH_SHORT).show();
             }
         } else if(requestCode == 20) {
-            String ipShared = "";
-            SharedPreferences shared = getSharedPreferences("P2Pinfo", Context.MODE_PRIVATE);
-            ipShared = shared.getString("P2Pinfo","IP not found");
-            Toast.makeText(getApplicationContext(), "ipShared: " + ipShared , Toast.LENGTH_LONG).show();
+            if(DeviceDetailFragment.clientListIP.size() == 0) {
+                Toast.makeText(getApplicationContext(), "No devices connected" , Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Uri uriImage = data.getData();
+            Intent serviceIntent = new Intent(this, FileTransferService.class);
+
+            for (int i = 0; i < DeviceDetailFragment.clientListIP.size(); i++) {
+                serviceIntent.setAction(FileTransferService.ACTION_SEND_FILE);
+                serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, uriImage.toString()); //uriImage.toString());
+                serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_ADDRESS,
+                        DeviceDetailFragment.clientListIP.get(i));
+                serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988);
+                startService(serviceIntent);
+            }
         }
     }
 
